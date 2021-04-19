@@ -17,6 +17,7 @@ use Doctrine\Common\DataFixtures\Purger\ORMPurger;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\ORMException;
 use Doctrine\ORM\ORMInvalidArgumentException;
+use Doctrine\Persistence\ManagerRegistry;
 use Fidry\AliceDataFixtures\Bridge\Doctrine\Entity\Dummy;
 use Fidry\AliceDataFixtures\Bridge\Doctrine\Entity\DummyEmbeddable;
 use Fidry\AliceDataFixtures\Bridge\Doctrine\Entity\DummySubClass;
@@ -27,6 +28,7 @@ use Fidry\AliceDataFixtures\Bridge\Doctrine\Entity\MappedSuperclassDummy;
 use Fidry\AliceDataFixtures\Bridge\Doctrine\IdGenerator;
 use Fidry\AliceDataFixtures\Exception\ObjectGeneratorPersisterException;
 use Fidry\AliceDataFixtures\Persistence\PersisterInterface;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use ReflectionClass;
 
@@ -51,12 +53,22 @@ class ObjectManagerPersisterTest extends TestCase
     private $purger;
 
     /**
+     * @var ManagerRegistry|MockObject
+     */
+    private $managerRegistry;
+
+    /**
      * @inheritdoc
      */
     public function setUp(): void
     {
         $this->entityManager = $GLOBALS['entity_manager'];
-        $this->persister = new ObjectManagerPersister($this->entityManager);
+
+        $this->managerRegistry = $this->createMock(ManagerRegistry::class);
+        $this->managerRegistry->method('getManagerForClass')->willReturn($this->entityManager);
+        $this->managerRegistry->method('getManagers')->willReturn([$this->entityManager]);
+
+        $this->persister = new ManagerRegistryPersister($this->managerRegistry);
         $this->purger = new ORMPurger($this->entityManager);
     }
 
@@ -65,17 +77,20 @@ class ObjectManagerPersisterTest extends TestCase
      */
     public function tearDown(): void
     {
+        $this->entityManager->getUnitOfWork()->clear();
         $this->purger->purge();
     }
 
     public function testIsAPersister()
     {
         $this->assertTrue(is_a(ObjectManagerPersister::class, PersisterInterface::class, true));
+        $this->assertTrue(is_a(ManagerRegistryPersister::class, PersisterInterface::class, true));
     }
 
     public function testIsNotClonable()
     {
         $this->assertFalse((new ReflectionClass(ObjectManagerPersister::class))->isCloneable());
+        $this->assertFalse((new ReflectionClass(ManagerRegistryPersister::class))->isCloneable());
     }
 
     /**

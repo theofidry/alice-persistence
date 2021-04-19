@@ -24,7 +24,7 @@ use Fidry\AliceDataFixtures\Exception\ObjectGeneratorPersisterExceptionFactory;
 use Fidry\AliceDataFixtures\Persistence\PersisterInterface;
 use Nelmio\Alice\IsAServiceTrait;
 
-class ObjectManagerPersister implements PersisterInterface
+/* final */ class ObjectManagerPersister implements PersisterInterface
 {
     use IsAServiceTrait;
 
@@ -46,7 +46,7 @@ class ObjectManagerPersister implements PersisterInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function persist($object)
     {
@@ -85,7 +85,7 @@ class ObjectManagerPersister implements PersisterInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function flush()
     {
@@ -117,7 +117,7 @@ class ObjectManagerPersister implements PersisterInterface
         return $persistableClasses;
     }
 
-    private function saveMetadataToRestore(ClassMetadata $metadata): void
+    private function saveMetadataToRestore(ORMClassMetadataInfo $metadata): void
     {
         if (!isset($this->metadataToRestore[$metadata->getName()])) {
             $this->metadataToRestore[$metadata->getName()] = $metadata;

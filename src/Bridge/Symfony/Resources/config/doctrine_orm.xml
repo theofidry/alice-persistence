@@ -49,9 +49,9 @@
                  public="true" />
 
         <service id="fidry_alice_data_fixtures.persistence.doctrine.purger.purger_factory"
-                 class="Fidry\AliceDataFixtures\Bridge\Doctrine\Purger\Purger"
+                 class="Fidry\AliceDataFixtures\Bridge\Doctrine\Purger\ManagerRegistryPurger"
                  lazy="true">
-            <argument type="service" id="doctrine.orm.entity_manager" />
+            <argument type="service" id="doctrine" />
         </service>
 
         <service id="fidry_alice_data_fixtures.persistence.purger.doctrine.orm_purger"
@@ -74,9 +74,9 @@
                  public="true" />
 
         <service id="fidry_alice_data_fixtures.persistence.persister.doctrine.object_manager_persister"
-                 class="Fidry\AliceDataFixtures\Bridge\Doctrine\Persister\ObjectManagerPersister"
+                 class="Fidry\AliceDataFixtures\Bridge\Doctrine\Persister\ManagerRegistryPersister"
                  lazy="true">
-            <argument type="service" id="doctrine.orm.entity_manager" />
+            <argument type="service" id="doctrine" />
         </service>
     </services>
 
